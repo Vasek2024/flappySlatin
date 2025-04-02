@@ -1,35 +1,32 @@
+// импорт функций
 import { loadImage } from './utils.js'
 import { checkCollision } from './collision.js'
 
-const canvas = document.querySelector('canvas');
+// находим элемент по селектору
+const canvas = document.querySelector('canvas')
 
+// создаём класс
 class Game {
-	SPEED = 3
+	SPEED = 3 // скорость движения элементов
 	DISTANCE_BETWEEN_PIPES = 3.5 * Pipe.width
 	frameCount = 0
 	score = 0
-	isGameStarted = false 
+	isGameStarted = false
 
 	constructor(canvas) {
+		// принятый элемент
 		this.canvas = canvas
+		// контекст канваса
 		this.ctx = this.canvas.getContext('2d')
-		const height = window.visualViewport
-			? window.visualViewport.height
-			: window.innerHeight
-		const width = window.visualViewport
-			? Math.min(window.visualViewport.width, height * 0.6)
-			: Math.min(window.innerWidth, height * 0.6)
-		this.canvas.height = 900
-		this.canvas.width = (900 * width) / height
-
+		this.canvas.height = 900 // высота поля (холста)
+		this.canvas.width = 900 // ширина (сделал по шире, чтоб больше труб выводилось на экран)
 		this.BG_IMG = new Image()
-		this.pipes = [new Pipe(this.canvas)]
+		this.pipes = [new Pipe(this.canvas)] //
 		this.ground = new Ground(this.canvas) // экземпляр класса земли
 		this.bird = new Bird(this.canvas) // экземпляр класса птички
 	}
 
 	async loadAssets() {
-		// await loadImage(this.BG_IMG, './img/bg.png')
 		await Promise.all([
 			loadImage(this.BG_IMG, './img/bg.png'), // грузим фоновое изображение
 			Pipe.preloadImages(), // грузим трубы
@@ -44,9 +41,10 @@ class Game {
 			img.src = src
 		})
 	}
-
+	//
 	start() {
-		this.initializeControls() // управление птичкой      
+		this.initializeControls() // управление птичкой
+		// с интервалом в 10 милли сек вызываем метод draw
 		this.intervalId = setInterval(() => this.draw(), 10)
 	}
 
@@ -55,17 +53,15 @@ class Game {
 	}
 
 	draw() {
-		// this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-
 		this.ctx.drawImage(this.BG_IMG, 0, 0, this.canvas.width, this.canvas.height)
 
 		// рисуем птичку при начале игры
-			if (!this.isGameStarted) {
-				this.ground.update(this.SPEED)
-				this.bird.draw()
-				this.displayScore()
-				return
-			}
+		if (!this.isGameStarted) {
+			this.ground.update(this.SPEED)
+			this.bird.draw()
+			this.displayScore()
+			return
+		}
 
 		if (this.frameCount * this.SPEED > this.DISTANCE_BETWEEN_PIPES) {
 			this.pipes.push(new Pipe(this.canvas))
@@ -78,17 +74,17 @@ class Game {
 		this.displayScore() //для отображения очков
 		// проверка на столкновение
 		if (checkCollision(this.bird, this.pipes, this.ground)) this.stop()
-		this.updatePipes()
+		this.updatePipes() // метод отрисовки труб
 		this.frameCount++
 	}
-
+	// метод отрисовки труб
 	updatePipes() {
 		for (let i = 0; i < this.pipes.length; i++) {
 			this.pipes[i].update(this.SPEED)
 			if (this.pipes[i].isOffscreen()) {
 				this.pipes.shift()
 				i--
-					this.score++
+				this.score++
 			}
 		}
 	}
@@ -110,7 +106,8 @@ class Game {
 		this.bird.flap()
 	}
 
-	displayScore() { // рисуем поле с количеством очков
+	displayScore() {
+		// рисуем поле с количеством очков
 		this.ctx.font = '60px Arial'
 		this.ctx.fillStyle = 'white'
 		this.ctx.textAlign = 'center'
@@ -123,16 +120,14 @@ class Game {
 	}
 }
 
-
-
 class Pipe {
 	static width = 100
 	// трубы
 	static topPipeImg
 	static bottomPipeImg
 	width = Pipe.width
-	spacing = 220
-
+	spacing = 320 // расстояние между трубами по вертикали (сделал по больше. Чтоб проще было играть)
+	// присвоить метод самому классу
 	static async preloadImages() {
 		Pipe.topPipeImg = new Image()
 		Pipe.bottomPipeImg = new Image()
@@ -154,15 +149,6 @@ class Pipe {
 	}
 
 	draw() {
-		// this.ctx.fillStyle = 'blue'
-		// this.ctx.fillRect(this.x, 0, this.width, this.top)
-		// this.ctx.fillRect(
-		// 	this.x,
-		// 	this.bottom,
-		// 	this.width,
-		// 	this.canvasHeight - this.bottom
-		// )
-
 		this.ctx.drawImage(
 			Pipe.topPipeImg,
 			this.x,
@@ -171,7 +157,7 @@ class Pipe {
 
 		this.ctx.drawImage(Pipe.bottomPipeImg, this.x, this.bottom)
 	}
-
+	// движение трубы
 	update(speed = 3) {
 		this.x -= speed
 		this.draw()
@@ -181,7 +167,6 @@ class Pipe {
 		return this.x < -this.width
 	}
 }
-
 
 class Ground {
 	static groundImg
@@ -210,7 +195,6 @@ class Ground {
 		this.draw()
 	}
 }
-// 
 
 class Bird {
 	static birdImg // для хранения изображения
@@ -254,26 +238,5 @@ class Bird {
 	}
 }
 
-
-
-const game = new Game(canvas);
-game.loadAssets().then(() => game.start());
-
-
-
-
-
-// Задание 1 (17.5.1)
-// принимаем строку
-function ff(str){
-    // if(typeof(str)!=='string'){
-			// разбиваем строку на массив
-			// реверс элементов в массиве
-			// объединяем все элементы массива в одно строковое значение
-			let backway = str.split('').reverse().join('')
-			return backway
-		// }
-}
-// ff('Виктор');
-console.log(ff('Виктор'))
-// console.log(typeof(str));
+const game = new Game(canvas)
+game.loadAssets().then(() => game.start())
