@@ -198,8 +198,8 @@ class Ground {
 
 class Bird {
 	static birdImg // для хранения изображения
-	width = 66 // размер птички
-	height = 47 // размер птички
+	width = 166 // размер птички
+	height = 147 // размер птички
 	hitboxWidth = 55
 	hitboxHeight = 35
 	flapPower = 4 // скорость взмахов крыльев
