@@ -144,7 +144,7 @@ class Pipe {
 	static topPipeImg
 	static bottomPipeImg
 	width = Pipe.width
-	spacing = 320 // расстояние между трубами по вертикали (сделал по больше. Чтоб проще было играть)
+	spacing = 220 // расстояние между трубами по вертикали
 	// присвоить метод самому классу
 	static async preloadImages() {
 		Pipe.topPipeImg = new Image()
