@@ -11,6 +11,8 @@ class Game {
 	DISTANCE_BETWEEN_PIPES = 3.5 * Pipe.width
 	frameCount = 0
 	score = 0
+	localScore = localStorage.getItem('number')
+	imgBird = './img/bg.png'
 	isGameStarted = false
 
 	constructor(canvas) {
@@ -28,7 +30,7 @@ class Game {
 
 	async loadAssets() {
 		await Promise.all([
-			loadImage(this.BG_IMG, './img/bg.png'), // грузим фоновое изображение
+			loadImage(this.BG_IMG, this.imgBird), // грузим фоновое изображение
 			Pipe.preloadImages(), // грузим трубы
 			Ground.preloadImage(), // грузим землю
 			Bird.preloadImage(), // грузим птичку
@@ -60,6 +62,7 @@ class Game {
 			this.ground.update(this.SPEED)
 			this.bird.draw()
 			this.displayScore()
+			this.displayLocalScore()
 			return
 		}
 
@@ -72,6 +75,7 @@ class Game {
 		this.ground.update(this.SPEED)
 		this.bird.update()
 		this.displayScore() //для отображения очков
+		this.displayLocalScore()
 		// проверка на столкновение
 		if (checkCollision(this.bird, this.pipes, this.ground)) this.stop()
 		this.updatePipes() // метод отрисовки труб
@@ -85,6 +89,8 @@ class Game {
 				this.pipes.shift()
 				i--
 				this.score++
+				this.localScore = localStorage.setItem('number', this.score)
+				this.localScore = localStorage.getItem('number')
 			}
 		}
 	}
@@ -106,8 +112,8 @@ class Game {
 		this.bird.flap()
 	}
 
-	displayScore() {
-		// рисуем поле с количеством очков
+	styleDisplay() {
+		// стили для очков
 		this.ctx.font = '60px Arial'
 		this.ctx.fillStyle = 'white'
 		this.ctx.textAlign = 'center'
@@ -115,8 +121,20 @@ class Game {
 		this.ctx.lineWidth = 8
 		this.ctx.strokeStyle = '#533846'
 		this.ctx.textBaseline = 'top'
+	}
+
+	displayScore() {
+		// рисуем поле с количеством очков
+		this.styleDisplay()
 		this.ctx.strokeText(this.score, this.canvas.width / 2, 15)
 		this.ctx.fillText(this.score, this.canvas.width / 2, 15)
+	}
+
+	displayLocalScore() {
+		// рисуем поле с количеством очков в истории
+		this.styleDisplay()
+		this.ctx.strokeText(this.localScore, this.canvas.width / 2, 95)
+		this.ctx.fillText(this.localScore, this.canvas.width / 2, 95)
 	}
 }
 
