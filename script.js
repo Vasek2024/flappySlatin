@@ -1,4 +1,4 @@
-// импорт функций
+// импорт функци
 import { loadImage } from './utils.js'
 import { checkCollision } from './collision.js'
 
